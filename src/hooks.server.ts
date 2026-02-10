@@ -2,6 +2,7 @@ import { json, type Handle } from '@sveltejs/kit';
 import { db } from '$lib/server/db';
 
 export const handle: Handle = async ({ event, resolve }) => {
+    console.log(`[${new Date().toLocaleTimeString()}] ${event.request.method} ${event.url.pathname}`);
     if (event.url.pathname.startsWith('/clip/v2')) {
         const apiKey = event.request.headers.get('hue-application-key');
 

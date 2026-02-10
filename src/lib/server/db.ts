@@ -37,7 +37,7 @@ const rawDevices: HueDevice[] = [
 const rawRooms: HueRoom[] = [
     {
         id: "27c4e017-2f51-44ee-968c-3b76f1e84c58", 
-        metadata: { name: "Wohnzimmer", archetype: "living_room" },
+        metadata: { name: "Living Room", archetype: "living_room" },
         children: [
             { rid: "f350c353-ba95-4c5a-af7c-f82230359b22", rtype: "device" },
             { rid: "dfdf381d-b618-4421-981f-be513f09929b", rtype: "device" },
@@ -48,7 +48,7 @@ const rawRooms: HueRoom[] = [
     },
     {
         id: "43744ecb-d044-4e89-b2f5-7dfd86a2ed75", 
-        metadata: { name: "Zimmer", archetype: "living_room" },
+        metadata: { name: "Office", archetype: "living_room" },
         children: [
             { rid: "d5acfb0d-66bd-4060-984d-243e6c8538c5", rtype: "device" },
             { rid: "a1a6f4ec-bfa8-4395-82c8-8a251690a90c", rtype: "device" }
@@ -58,7 +58,7 @@ const rawRooms: HueRoom[] = [
     },
     {
         id: "afc2e58b-fd36-45a5-bc23-a0934b03ef3e", 
-        metadata: { name: "Schlafzimmer", archetype: "bedroom" },
+        metadata: { name: "Bedroom", archetype: "bedroom" },
         children: [
             { rid: "5234149b-5aa5-4f25-80a1-dc6c5d5551ef", rtype: "device" },
             { rid: "d8fd8ba7-866b-44fe-b654-6b4ab8bfc1dd", rtype: "device" }
