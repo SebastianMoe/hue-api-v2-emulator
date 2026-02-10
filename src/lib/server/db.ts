@@ -1,10 +1,12 @@
-import type { HueDbSchema, HueLight, HueRoom, HueDevice } from '$lib/types';
+import type { HueDbSchema, HueLight, HueRoom, HueDevice, HueGroupedLight } from '$lib/types';
 import { xyToHex } from '$lib/color';
+
+const BRIDGE_HOME_GROUP_ID = "79e913d1-0f05-421f-9283-55d447a5cd99";
 
 const rawDevices: HueDevice[] = [
     {
         id: "ad13a94c-927d-4b72-8a13-0ae6e74e5f40", 
-        metadata: { name: "Hue go 1", archetype: "table_shade" },
+        metadata: { name: "Hue go", archetype: "table_shade" },
         services: [{ rid: "31eae248-c6bd-4a30-9229-5147666bdf99", rtype: "light" }],
         type: "device"
     },
@@ -112,6 +114,41 @@ export const db = {
     getAllDevices: () => dbData.devices,
     getAllRooms: () => dbData.rooms,
     getAllLights: () => Array.from(dbData.lights.values()),
+    getGroupedLights: (): HueGroupedLight[] => {
+        const groupedLights: HueGroupedLight[] = [];
+
+        dbData.rooms.forEach(room => {
+            const serviceId = room.services.find(s => s.rtype === 'grouped_light')?.rid;
+            if (serviceId) {
+                groupedLights.push({
+                    id: serviceId,
+                    id_v1: `/groups/${Math.floor(Math.random() * 100)}`, // Fake v1 ID
+                    owner: { rid: room.id, rtype: 'room' },
+                    on: { on: false }, // Simplification
+                    dimming: { brightness: 0 },
+                    alert: { action_values: ["breathe"] },
+                    signaling: { signal_values: ["no_signal", "on_off"] },
+                    type: 'grouped_light'
+                });
+            }
+        });
+
+        groupedLights.push({
+            id: BRIDGE_HOME_GROUP_ID,
+            id_v1: "/groups/0",
+            owner: {
+                rid: "0f5af257-b711-4f99-9fe6-f85bcbfa2af4", // Random/Fixed ID for bridge
+                rtype: "bridge_home"
+            },
+            on: { on: Array.from(dbData.lights.values()).some(l => l.on.on) },
+            dimming: { brightness: 100 },
+            alert: { action_values: ["breathe"] },
+            signaling: { signal_values: ["alternating", "no_signal", "on_off", "on_off_color"] },
+            type: 'grouped_light'
+        });
+
+        return groupedLights;
+    },
     getLight: (id: string) => dbData.lights.get(id),
 
     // Setter
@@ -135,6 +172,17 @@ export const db = {
     },
 
     updateGroupedLight: (groupedLightId: string, update: any) => {
+        // Special Case: Bridge Home (All Lights)
+        if (groupedLightId === BRIDGE_HOME_GROUP_ID) {
+             const allLights = Array.from(dbData.lights.values());
+             const updatedLights: HueLight[] = [];
+             allLights.forEach(l => {
+                 const res = db.updateLight(l.id, update);
+                 if (res) updatedLights.push(res);
+             });
+             return updatedLights;
+        }
+
         const room = dbData.rooms.find(r => r.services.some(s => s.rid === groupedLightId));
         if (!room) return null;
 

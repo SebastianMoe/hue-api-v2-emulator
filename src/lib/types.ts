@@ -41,6 +41,18 @@ export interface HueLight {
     type: 'light';
 }
 
+export interface HueGroupedLight {
+    id: string;
+    id_v1: string;
+    owner: { rid: string; rtype: string };
+    on?: { on: boolean };
+    dimming?: { brightness: number };
+    alert?: { action_values: string[] };
+    signaling?: { signal_values: string[] };
+    dynamics?: any;
+    type: 'grouped_light';
+}
+
 export interface HueDbSchema {
     users: string[];
     devices: HueDevice[];
